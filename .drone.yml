@@ -13,7 +13,9 @@ steps:
       - name: dockersock
         path: /var/run
     commands:
-      - sleep 10 # give docker enough time to start
+      - export GOTIFY_VERSION=$(echo $GOTIFY_RELEASE_TITLE | awk '{print $2}')
+      - echo "Building gotify version $GOTIFY_VERSION"
+      - sleep 5 # give docker enough time to start
       - docker ps -a
       - apk --no-cache add build-base
       - make build-linux-amd64
