@@ -13,6 +13,7 @@ steps:
       - echo "Building gotify version $GOTIFY_VERSION"
       - sleep 5 # give docker enough time to start
       - docker ps -a
+      - pwd
       - apk --no-cache add build-base
       - make build-linux-amd64
       - make build-linux-arm64
