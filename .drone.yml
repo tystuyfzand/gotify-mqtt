@@ -11,11 +11,10 @@ steps:
       - name: build
         path: /drone/src/build
     commands:
-      - export GOTIFY_VERSION=v$(echo $GOTIFY_RELEASE_TITLE | awk '{print $2}')
+      - export GOTIFY_VERSION=v$(echo $DRONE_TAG | awk -F'-' '{print $2}')
       - echo "Building gotify version $GOTIFY_VERSION"
       - sleep 5 # give docker enough time to start
       - docker ps -a
-      - pwd
       - apk --no-cache add build-base git go
       - export PATH=$PATH:$HOME/go/bin
       - make -e build-linux-amd64
@@ -56,4 +55,4 @@ volumes:
 
 trigger:
   event:
-    - custom
+    - tag
