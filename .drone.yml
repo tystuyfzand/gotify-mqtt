@@ -2,14 +2,9 @@ kind: pipeline
 type: docker
 name: default
 
-platform:
-  os: linux
-  arch: amd64
-
 steps:
-  - name: build
+  - name: test
     image: docker:dind
-    privileged: true
     volumes:
       - name: dockersock
         path: /var/run
@@ -30,3 +25,7 @@ services:
     volumes:
       - name: dockersock
         path: /var/run
+
+volumes:
+  - name: dockersock
+    temp: {}
