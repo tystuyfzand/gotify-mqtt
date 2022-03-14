@@ -18,9 +18,9 @@ steps:
       - pwd
       - apk --no-cache add build-base git go
       - export PATH=$PATH:$HOME/go/bin
-      - make build-linux-amd64
-      - make build-linux-arm64
-      - make build-linux-arm-7
+      - make -e build-linux-amd64
+      - make -e build-linux-arm64
+      - make -e build-linux-arm-7
   - name: publish
     image: plugins/github-release
     volumes:
