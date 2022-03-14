@@ -22,9 +22,9 @@ func GetGotifyPluginInfo() plugin.Info {
 }
 
 type Server struct {
-	Address string
-	Username string
-	Password string
+	Address   string
+	Username  string
+	Password  string
 	Subscribe []string
 }
 
@@ -36,9 +36,9 @@ type Config struct {
 type Plugin struct {
 	userCtx    plugin.UserContext
 	msgHandler plugin.MessageHandler
-	config *Config
-	clients []mqtt.Client
-	enabled bool
+	config     *Config
+	clients    []mqtt.Client
+	enabled    bool
 }
 
 // SetMessageHandler implements plugin.Messenger
@@ -108,7 +108,7 @@ func (p *Plugin) ValidateAndSetConfig(c interface{}) error {
 
 	// If enabled already and config was updated, reconnect clients
 	if p.enabled {
-		return p.connectClients()
+		p.connectClients()
 	}
 
 	return nil
