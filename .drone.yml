@@ -17,6 +17,7 @@ steps:
       - docker ps -a
       - pwd
       - apk --no-cache add build-base git go
+      - export PATH=$PATH:$GOPATH/bin
       - make build-linux-amd64
       - make build-linux-arm64
       - make build-linux-arm-7
