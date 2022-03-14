@@ -1,0 +1,29 @@
+kind: pipeline
+type: docker
+name: default
+
+platform:
+  os: linux
+  arch: amd64
+
+steps:
+  - name: build
+    image: docker:dind
+    volumes:
+      - name: dockersock
+        path: /var/run
+    commands:
+      - sleep 5 # give docker enough time to start
+      - docker ps -a
+      - apk --no-cache add build-base
+      - make build-linux-amd64
+      - make build-linux-arm64
+      - make build-linux-arm-7
+
+services:
+  - name: docker
+    image: docker:dind
+    privileged: true
+    volumes:
+      - name: dockersock
+        path: /var/run
