@@ -18,7 +18,7 @@ update-go-mod: create-build-dir download-tools
 	wget -O ${BUILDDIR}/gotify-server.mod https://raw.githubusercontent.com/gotify/server/${GOTIFY_VERSION}/go.mod
 	gomod-cap -from ${BUILDDIR}/gotify-server.mod -to go.mod
 	rm ${BUILDDIR}/gotify-server.mod || true
-	go mod edit -require=github.com/gotify/server$(shell echo "/${GOTIFY_VERSION}" | egrep -o "^/v[2-9][0-9]*")@${GOTIFY_VERSION}
+	go mod edit -require=github.com/gotify/server$(echo "/${GOTIFY_VERSION}" | egrep -o "^/v[2-9][0-9]*")@${GOTIFY_VERSION}
 	go mod tidy
 
 get-gotify-server-go-version: create-build-dir
