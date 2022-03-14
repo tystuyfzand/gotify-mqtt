@@ -15,7 +15,7 @@ create-build-dir:
 	mkdir -p ${BUILDDIR} || true
 
 update-go-mod: create-build-dir download-tools
-	wget -LO ${BUILDDIR}/gotify-server.mod https://raw.githubusercontent.com/gotify/server/${GOTIFY_VERSION}/go.mod
+	wget -O ${BUILDDIR}/gotify-server.mod https://raw.githubusercontent.com/gotify/server/${GOTIFY_VERSION}/go.mod
 	gomod-cap -from ${BUILDDIR}/gotify-server.mod -to go.mod
 	rm ${BUILDDIR}/gotify-server.mod || true
 	go mod edit -require=github.com/gotify/server$(shell echo "/${GOTIFY_VERSION}" | egrep -o "^/v[2-9][0-9]*")@${GOTIFY_VERSION}
@@ -23,7 +23,7 @@ update-go-mod: create-build-dir download-tools
 
 get-gotify-server-go-version: create-build-dir
 	rm ${BUILDDIR}/gotify-server-go-version || true
-	wget -LO ${BUILDDIR}/gotify-server-go-version https://raw.githubusercontent.com/gotify/server/${GOTIFY_VERSION}/GO_VERSION
+	wget -O ${BUILDDIR}/gotify-server-go-version https://raw.githubusercontent.com/gotify/server/${GOTIFY_VERSION}/GO_VERSION
 
 build-linux-amd64: get-gotify-server-go-version update-go-mod
 	${DOCKER_RUN} ${DOCKER_BUILD_IMAGE}:$(GO_VERSION)-linux-amd64 ${DOCKER_GO_BUILD} -o ${BUILDDIR}/${PLUGIN_NAME}-linux-amd64${FILE_SUFFIX}.so ${DOCKER_WORKDIR}
