@@ -11,7 +11,6 @@ steps:
       - name: build
         path: /drone/src/build
     commands:
-      - export GOTIFY_VERSION=v$(echo $DRONE_TAG | awk -F'-' '{print $2}')
       - echo "Building gotify version $GOTIFY_VERSION"
       - sleep 5 # give docker enough time to start
       - docker ps -a
@@ -21,7 +20,7 @@ steps:
       - make -e build-linux-arm64
       - make -e build-linux-arm-7
   - name: publish
-    image: plugins/github-release
+    image: tystuyfzand/drone-github-release
     volumes:
       - name: build
         path: /build
@@ -30,7 +29,8 @@ steps:
         from_secret: github_api_key
       files:
         - /build/*.so
-      title: "MQTT for Gotify ${GOTIFY_RELEASE_TITLE}"
+      title: "MQTT for Gotify ${GOTIFY_VERSION}"
+      tag_name: "${GOTIFY_VERSION}"
       checksum:
         - md5
         - sha1
@@ -55,4 +55,4 @@ volumes:
 
 trigger:
   event:
-    - tag
+    - custom
