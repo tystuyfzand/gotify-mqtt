@@ -18,9 +18,7 @@ steps:
       - docker ps -a
       - apk --no-cache add build-base git go
       - export PATH=$PATH:$HOME/go/bin
-      - make -e build-linux-amd64
-      - make -e build-linux-arm64
-      - make -e build-linux-arm-7
+      - make -e build
       - echo "Checking output files in $BUILDDIR"
       - ls $BUILDDIR
   - name: publish
@@ -32,7 +30,7 @@ steps:
       api_key:
         from_secret: github_api_key
       files:
-        - /build/*
+        - /build/*.so
       title: "MQTT for Gotify ${GOTIFY_VERSION}"
       tag_name: "${GOTIFY_VERSION}"
       checksum:
@@ -40,8 +38,6 @@ steps:
         - sha1
         - sha256
         - sha512
-        - adler32
-        - crc32
 
 services:
   - name: docker
