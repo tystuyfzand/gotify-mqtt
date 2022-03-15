@@ -30,7 +30,7 @@ steps:
       files:
         - /build/*.so
       title: "MQTT for Gotify ${GOTIFY_VERSION}"
-      tag_name: "${GOTIFY_VERSION}"
+      tag_name: "latest-gotify-${GOTIFY_VERSION}"
       checksum:
         - md5
         - sha1
