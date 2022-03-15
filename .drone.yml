@@ -10,8 +10,6 @@ steps:
         path: /var/run
       - name: build
         path: /build
-    environment:
-      BUILDDIR: /build
     commands:
       - echo "Building gotify version $GOTIFY_VERSION"
       - sleep 5 # give docker enough time to start
@@ -19,8 +17,8 @@ steps:
       - apk --no-cache add build-base git go
       - export PATH=$PATH:$HOME/go/bin
       - make -e build
-      - echo "Checking output files in $BUILDDIR"
-      - ls $BUILDDIR
+      - ls build
+      - cp build/*.so /build
   - name: publish
     image: tystuyfzand/drone-github-release
     volumes:
