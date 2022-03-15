@@ -10,6 +10,8 @@ steps:
         path: /var/run
       - name: build
         path: /build
+    environment:
+      BUILDDIR: /build
     commands:
       - echo "Building gotify version $GOTIFY_VERSION"
       - sleep 5 # give docker enough time to start
@@ -19,8 +21,6 @@ steps:
       - make -e build-linux-amd64
       - make -e build-linux-arm64
       - make -e build-linux-arm-7
-    environment:
-      - BUILDDIR=/build
   - name: publish
     image: tystuyfzand/drone-github-release
     volumes:
