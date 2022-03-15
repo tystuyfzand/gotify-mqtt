@@ -30,7 +30,7 @@ steps:
       api_key:
         from_secret: github_api_key
       files:
-        - /build/*.so
+        - /build/*
       title: "MQTT for Gotify ${GOTIFY_VERSION}"
       tag_name: "${GOTIFY_VERSION}"
       checksum:
