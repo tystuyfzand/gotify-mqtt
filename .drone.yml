@@ -21,6 +21,8 @@ steps:
       - make -e build-linux-amd64
       - make -e build-linux-arm64
       - make -e build-linux-arm-7
+      - echo "Checking output files in $BUILDDIR"
+      - ls $BUILDDIR
   - name: publish
     image: tystuyfzand/drone-github-release
     volumes:
