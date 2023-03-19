@@ -3,6 +3,9 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"math/rand"
+	"time"
+
 	mqtt "github.com/eclipse/paho.mqtt.golang"
 	"github.com/gotify/plugin-api"
 )
@@ -25,11 +28,12 @@ type Server struct {
 	Address   string
 	Username  string
 	Password  string
+	ClientID  string
 	Subscribe []string
 }
 
 type Config struct {
-	Servers []Server
+	Servers []*Server
 }
 
 // Plugin is plugin instance
@@ -50,6 +54,7 @@ func (p *Plugin) SetMessageHandler(h plugin.MessageHandler) {
 // Enable adds users to the context map which maps to a Plugin.
 func (p *Plugin) Enable() error {
 	p.enabled = true
+	p.connectClients()
 	return nil
 }
 
@@ -65,8 +70,8 @@ func (p *Plugin) Disable() error {
 // Invoked whenever an unmarshaling is required.
 func (p *Plugin) DefaultConfig() interface{} {
 	return &Config{
-		Servers: []Server{
-			{Address: "127.0.0.1:1883", Subscribe: []string{"*"}},
+		Servers: []*Server{
+			&Server{Address: "127.0.0.1:1883", Subscribe: []string{"*"}},
 		},
 	}
 }
@@ -86,14 +91,12 @@ func (p *Plugin) ValidateAndSetConfig(c interface{}) error {
 	config := c.(*Config)
 
 	// If listeners are configured, shut them down and start fresh
-	if p.clients != nil {
-		for _, client := range p.clients {
-			if client == nil || !client.IsConnected() {
-				continue
-			}
-
-			go client.Disconnect(500)
+	for _, client := range p.clients {
+		if client == nil || !client.IsConnected() {
+			continue
 		}
+
+		go client.Disconnect(500)
 	}
 
 	p.clients = make([]mqtt.Client, len(config.Servers))
@@ -101,6 +104,9 @@ func (p *Plugin) ValidateAndSetConfig(c interface{}) error {
 	for _, server := range config.Servers {
 		if server.Address == "" {
 			return ErrInvalidAddress
+		}
+		if server.ClientID == "" {
+			server.ClientID = "gotify-" + randString()
 		}
 	}
 
@@ -165,11 +171,11 @@ func (p *Plugin) handleMessage(client mqtt.Client, message mqtt.Message) {
 }
 
 // newClient creates a new client from the serverConfig
-func (p *Plugin) newClient(serverConfig Server) (mqtt.Client, error) {
+func (p *Plugin) newClient(serverConfig *Server) (mqtt.Client, error) {
 	opts := mqtt.NewClientOptions()
 
 	opts.AddBroker(serverConfig.Address)
-	opts.SetClientID("gotify")
+	opts.SetClientID(serverConfig.ClientID)
 
 	if serverConfig.Username != "" {
 		opts.SetUsername(serverConfig.Username)
@@ -192,8 +198,18 @@ func (p *Plugin) newClient(serverConfig Server) (mqtt.Client, error) {
 	return client, nil
 }
 
+func randString() string {
+	letterRunes := []rune("0123456789abcdef")
+	b := make([]rune, 16)
+	for i := range b {
+		b[i] = letterRunes[rand.Intn(len(letterRunes))]
+	}
+	return string(b)
+}
+
 // NewGotifyPluginInstance creates a plugin instance for a user context.
 func NewGotifyPluginInstance(ctx plugin.UserContext) plugin.Plugin {
+	rand.Seed(time.Now().UnixNano())
 	return &Plugin{
 		userCtx: ctx,
 		clients: make([]mqtt.Client, 0),
